@@ -1,0 +1,40 @@
+name: Verify Worker
+description: Test and bundle a single-module Cloudflare Worker from a locked npm project.
+inputs:
+  project:
+    description: Project directory relative to the checkout.
+    default: '.'
+  target:
+    description: Target whose NAME.wrangler.json config to verify.
+    required: true
+  tag:
+    description: Exact release tag. Leave empty for pre-tag verification.
+    default: ''
+  commit:
+    description: Expected checkout commit.
+    required: true
+outputs:
+  artifact:
+    description: Directory containing worker.mjs and manifest.json.
+    value: ${{ steps.verify.outputs.artifact }}
+  digest:
+    description: SHA-256 of worker.mjs.
+    value: ${{ steps.verify.outputs.digest }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      with:
+        node-version: '24.19.0'
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version: '1.4.3'
+    - id: verify
+      shell: bash
+      env:
+        ACTION_ROOT: ${{ github.action_path }}
+        WORKER_PROJECT: ${{ inputs.project }}
+        WORKER_TARGET: ${{ inputs.target }}
+        RELEASE_TAG: ${{ inputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.commit }}
+      run: bun "$ACTION_ROOT/scripts/verify.ts"
