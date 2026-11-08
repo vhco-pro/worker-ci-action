@@ -1,14 +1,23 @@
 # Worker CI action
 
-Verifies a locked npm Worker project using Node 24.19.0 and Bun 1.4.3.
-The caller supplies a clean checkout commit, optional exact tag and an
-explicit target. The project supplies `TARGET.wrangler.json` and the npm
-scripts `check`, `lint`, `test` and `test:bundle`.
+Build and test a Cloudflare Worker from a specific Git commit. The action returns
+the verified JavaScript module and a manifest for one deployment target.
 
-The action runs Wrangler's bundle and no-bundle dry runs, compares the emitted
-module bytes and gives the exact candidate module to the caller's smoke test.
-The output directory contains `worker.mjs` and `manifest.json`. The manifest
-binds the artifact to the commit, tag, target, Worker name, config digest, lock
-digest and toolchain. The action is for single-module Workers without assets,
-build hooks or custom module rules. Run it in a job with read-only repository
-permissions and synthetic bindings.
+```mermaid
+flowchart LR
+    A["Git commit and npm lockfile"] --> B["Type check, lint and Worker tests"]
+    B --> C["Wrangler bundle dry run"]
+    C --> D["Test bundle in workerd"]
+    C --> E["Compare no-bundle upload bytes"]
+    D --> F["Verified worker.mjs and manifest.json"]
+    E --> F
+```
+
+Use the action from a read-only GitHub Actions job. It sets up Node 24.19.0 and
+Bun 1.4.3 and installs dependencies from the npm lockfile. The project supplies
+its tests and Wrangler configuration. The pilot runs with synthetic service
+bindings and no Cloudflare credentials.
+
+[Set up a project and call the action](docs/usage.md) ·
+[Release workflow](https://github.com/vhco-pro/worker-release-workflow) ·
+[Example release](https://github.com/vhco-pro/vhco-contact/releases/tag/v0.1.0)
