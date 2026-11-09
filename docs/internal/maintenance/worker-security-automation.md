@@ -16,6 +16,16 @@ No Dependabot version config or CodeQL results were present at the base. Local a
 
 ## Reviews
 
+### R-1
+
+Target: cf35dde64e9a9b2ffaeb168b19e221cff1f745ec
+Model: unknown
+Isolation: procedural
+
+```text
+NO FINDINGS
+```
+
 ## State
 
-Independent review pending.
+Local checks and independent review passed. Hosted verification is pending.
